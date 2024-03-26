@@ -49,6 +49,8 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { FASTP } from '../modules/nf-core/fastp/main'
+include { FAQCS } from '../modules/nf-core/faqcs/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,6 +110,23 @@ workflow QUALITYCONTROL {
         ch_multiqc_logo.toList()
     )
     multiqc_report = MULTIQC.out.report.toList()
+
+    //
+    // MODULE: Run Fastp trimming
+    //
+    FASTP (
+        INPUT_CHECK.out.reads,
+        [],
+        false,
+        false
+    )
+
+    //
+    // MODULE: Run Faqcs trimming
+    //
+    FAQCS (
+        INPUT_CHECK.out.reads
+    )
 }
 
 /*
